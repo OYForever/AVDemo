@@ -1,24 +1,110 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Main View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="MainViewController" customModule="OYAVDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4AJ-wN-KsK">
+                                <rect key="frame" x="150" y="259" width="93.333333333333314" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="音频采集"/>
+                                <connections>
+                                    <segue destination="Pxc-HB-r8j" kind="show" id="2Xg-zn-PpY"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="r14-sE-oKQ">
+                                <rect key="frame" x="150" y="334" width="93.333333333333314" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="音频编码"/>
+                                <connections>
+                                    <segue destination="Zdn-0R-d3p" kind="show" id="4n5-ac-EGF"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="4AJ-wN-KsK" firstAttribute="centerX" secondItem="6Tk-OE-BBY" secondAttribute="centerX" id="MJi-7l-HTu"/>
+                            <constraint firstItem="r14-sE-oKQ" firstAttribute="centerX" secondItem="4AJ-wN-KsK" secondAttribute="centerX" id="MzS-pB-apS"/>
+                            <constraint firstItem="r14-sE-oKQ" firstAttribute="top" secondItem="4AJ-wN-KsK" secondAttribute="bottom" constant="40" id="bPr-bI-nsE"/>
+                            <constraint firstItem="4AJ-wN-KsK" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="200" id="sVj-hI-5hM"/>
+                        </constraints>
                     </view>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="-747" y="3"/>
+        </scene>
+        <!--Audio Capture View Controller-->
+        <scene sceneID="mfs-SH-fA6">
+            <objects>
+                <viewController id="Pxc-HB-r8j" customClass="AudioCaptureViewController" customModule="OYAVDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Rih-Hl-8Qh">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="842"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SSf-zR-3SN">
+                                <rect key="frame" x="150" y="200" width="93.333333333333314" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="开始采集"/>
+                                <connections>
+                                    <action selector="startAction:" destination="Pxc-HB-r8j" eventType="touchUpInside" id="8S2-IH-PM7"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wXI-Aa-NBF">
+                                <rect key="frame" x="150" y="275" width="93.333333333333314" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="停止采集"/>
+                                <connections>
+                                    <action selector="stopAction:" destination="Pxc-HB-r8j" eventType="touchUpInside" id="p7X-2e-Tac"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="hcP-bS-8xV"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="SSf-zR-3SN" firstAttribute="top" secondItem="hcP-bS-8xV" secondAttribute="top" constant="200" id="v8P-HA-sIG"/>
+                            <constraint firstItem="SSf-zR-3SN" firstAttribute="centerX" secondItem="hcP-bS-8xV" secondAttribute="centerX" id="vwA-hd-Bpm"/>
+                            <constraint firstItem="wXI-Aa-NBF" firstAttribute="top" secondItem="SSf-zR-3SN" secondAttribute="bottom" constant="40" id="wct-tA-aQ0"/>
+                            <constraint firstItem="wXI-Aa-NBF" firstAttribute="centerX" secondItem="SSf-zR-3SN" secondAttribute="centerX" id="yPo-Bc-PX1"/>
+                        </constraints>
+                    </view>
+                    <navigationItem key="navigationItem" id="vel-UK-T8v"/>
+                    <connections>
+                        <outlet property="startButton" destination="SSf-zR-3SN" id="FsC-P7-h1g"/>
+                        <outlet property="stopButton" destination="wXI-Aa-NBF" id="Zok-6n-NKr"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Hsq-5y-9ro" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="195" y="3"/>
+        </scene>
+        <!--Audio Encoder View Controller-->
+        <scene sceneID="78d-pc-N6z">
+            <objects>
+                <viewController id="Zdn-0R-d3p" customClass="AudioEncoderViewController" customModule="OYAVDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationItem key="navigationItem" id="CeJ-I4-kGC"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Nfc-Qf-QkZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="195" y="715"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

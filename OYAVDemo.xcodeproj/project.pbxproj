@@ -9,21 +9,31 @@
 /* Begin PBXBuildFile section */
 		6C1EE9842BFB28C900E325CF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1EE9832BFB28C900E325CF /* AppDelegate.swift */; };
 		6C1EE9862BFB28C900E325CF /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1EE9852BFB28C900E325CF /* SceneDelegate.swift */; };
-		6C1EE9882BFB28C900E325CF /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1EE9872BFB28C900E325CF /* ViewController.swift */; };
+		6C1EE9882BFB28C900E325CF /* AudioCaptureViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1EE9872BFB28C900E325CF /* AudioCaptureViewController.swift */; };
 		6C1EE98B2BFB28C900E325CF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C1EE9892BFB28C900E325CF /* Main.storyboard */; };
 		6C1EE98D2BFB28CB00E325CF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6C1EE98C2BFB28CB00E325CF /* Assets.xcassets */; };
 		6C1EE9902BFB28CB00E325CF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6C1EE98E2BFB28CB00E325CF /* LaunchScreen.storyboard */; };
+		6C1EE9992BFB2AC300E325CF /* OYAudioCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1EE9982BFB2AC300E325CF /* OYAudioCapture.swift */; };
+		6C1EE99C2BFD9F8C00E325CF /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C1EE99A2BFD9F8C00E325CF /* MainViewController.swift */; };
+		6C59BBAE2C09D4D300618235 /* OYAudioAACEncode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C59BBAD2C09D4D300618235 /* OYAudioAACEncode.swift */; };
+		6C59BBB12C0DAE4600618235 /* AudioEncoderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C59BBAF2C0DAE4600618235 /* AudioEncoderViewController.swift */; };
+		6C59BBB22C0DAE4600618235 /* AudioEncoderViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 6C59BBB02C0DAE4600618235 /* AudioEncoderViewController.xib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		6C1EE9802BFB28C900E325CF /* OYAVDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OYAVDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C1EE9832BFB28C900E325CF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		6C1EE9852BFB28C900E325CF /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		6C1EE9872BFB28C900E325CF /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		6C1EE9872BFB28C900E325CF /* AudioCaptureViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCaptureViewController.swift; sourceTree = "<group>"; };
 		6C1EE98A2BFB28C900E325CF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		6C1EE98C2BFB28CB00E325CF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6C1EE98F2BFB28CB00E325CF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		6C1EE9912BFB28CB00E325CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6C1EE9982BFB2AC300E325CF /* OYAudioCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OYAudioCapture.swift; sourceTree = "<group>"; };
+		6C1EE99A2BFD9F8C00E325CF /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		6C59BBAD2C09D4D300618235 /* OYAudioAACEncode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OYAudioAACEncode.swift; sourceTree = "<group>"; };
+		6C59BBAF2C0DAE4600618235 /* AudioEncoderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEncoderViewController.swift; sourceTree = "<group>"; };
+		6C59BBB02C0DAE4600618235 /* AudioEncoderViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = AudioEncoderViewController.xib; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,15 +66,52 @@
 		6C1EE9822BFB28C900E325CF /* OYAVDemo */ = {
 			isa = PBXGroup;
 			children = (
+				6C1EE99E2BFDF4DF00E325CF /* 01.音频采集 */,
+				6C59BBAB2C09C18A00618235 /* 02.音频编码 */,
+				6C1EE9972BFB2A7E00E325CF /* Capture */,
+				6C59BBAC2C09D49000618235 /* Encoder */,
 				6C1EE9832BFB28C900E325CF /* AppDelegate.swift */,
 				6C1EE9852BFB28C900E325CF /* SceneDelegate.swift */,
-				6C1EE9872BFB28C900E325CF /* ViewController.swift */,
+				6C1EE99A2BFD9F8C00E325CF /* MainViewController.swift */,
 				6C1EE9892BFB28C900E325CF /* Main.storyboard */,
 				6C1EE98C2BFB28CB00E325CF /* Assets.xcassets */,
 				6C1EE98E2BFB28CB00E325CF /* LaunchScreen.storyboard */,
 				6C1EE9912BFB28CB00E325CF /* Info.plist */,
 			);
 			path = OYAVDemo;
+			sourceTree = "<group>";
+		};
+		6C1EE9972BFB2A7E00E325CF /* Capture */ = {
+			isa = PBXGroup;
+			children = (
+				6C1EE9982BFB2AC300E325CF /* OYAudioCapture.swift */,
+			);
+			path = Capture;
+			sourceTree = "<group>";
+		};
+		6C1EE99E2BFDF4DF00E325CF /* 01.音频采集 */ = {
+			isa = PBXGroup;
+			children = (
+				6C1EE9872BFB28C900E325CF /* AudioCaptureViewController.swift */,
+			);
+			path = "01.音频采集";
+			sourceTree = "<group>";
+		};
+		6C59BBAB2C09C18A00618235 /* 02.音频编码 */ = {
+			isa = PBXGroup;
+			children = (
+				6C59BBAF2C0DAE4600618235 /* AudioEncoderViewController.swift */,
+				6C59BBB02C0DAE4600618235 /* AudioEncoderViewController.xib */,
+			);
+			path = "02.音频编码";
+			sourceTree = "<group>";
+		};
+		6C59BBAC2C09D49000618235 /* Encoder */ = {
+			isa = PBXGroup;
+			children = (
+				6C59BBAD2C09D4D300618235 /* OYAudioAACEncode.swift */,
+			);
+			path = Encoder;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -125,6 +172,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C59BBB22C0DAE4600618235 /* AudioEncoderViewController.xib in Resources */,
 				6C1EE9902BFB28CB00E325CF /* LaunchScreen.storyboard in Resources */,
 				6C1EE98D2BFB28CB00E325CF /* Assets.xcassets in Resources */,
 				6C1EE98B2BFB28C900E325CF /* Main.storyboard in Resources */,
@@ -138,9 +186,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6C1EE9882BFB28C900E325CF /* ViewController.swift in Sources */,
+				6C1EE9882BFB28C900E325CF /* AudioCaptureViewController.swift in Sources */,
+				6C1EE9992BFB2AC300E325CF /* OYAudioCapture.swift in Sources */,
+				6C59BBB12C0DAE4600618235 /* AudioEncoderViewController.swift in Sources */,
+				6C59BBAE2C09D4D300618235 /* OYAudioAACEncode.swift in Sources */,
 				6C1EE9842BFB28C900E325CF /* AppDelegate.swift in Sources */,
 				6C1EE9862BFB28C900E325CF /* SceneDelegate.swift in Sources */,
+				6C1EE99C2BFD9F8C00E325CF /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -292,8 +344,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3Q8L4K7XZQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OYAVDemo/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "打开相机权限";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "打开麦克风权限";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -304,7 +360,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = oyfb.OYAVDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.umall.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -319,8 +375,11 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3Q8L4K7XZQ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OYAVDemo/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "打开相机权限";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "打开麦克风权限";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -331,7 +390,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = oyfb.OYAVDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.umall.test;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22155" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22131"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="AudioEncoderViewController" customModule="OYAVDemo" customModuleProvider="target">
+            <connections>
+                <outlet property="view" destination="kS1-0x-6GP" id="DQD-Mt-hik"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="kS1-0x-6GP">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="s1z-1G-sXS">
+                    <rect key="frame" x="124.00000000000001" y="259" width="145.33333333333337" height="35"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="开始采集并编码"/>
+                    <connections>
+                        <action selector="startAction:" destination="-1" eventType="touchUpInside" id="Xow-p7-PDx"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HSB-if-ZJr">
+                    <rect key="frame" x="150" y="334" width="93.333333333333314" height="35"/>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="停止采集"/>
+                    <connections>
+                        <action selector="stopAction:" destination="-1" eventType="touchUpInside" id="rtR-QK-bfm"/>
+                    </connections>
+                </button>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="sjJ-5T-P1q"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="s1z-1G-sXS" firstAttribute="centerX" secondItem="sjJ-5T-P1q" secondAttribute="centerX" id="Srp-C7-i0V"/>
+                <constraint firstItem="HSB-if-ZJr" firstAttribute="centerX" secondItem="s1z-1G-sXS" secondAttribute="centerX" id="TwX-lg-GU8"/>
+                <constraint firstItem="HSB-if-ZJr" firstAttribute="top" secondItem="s1z-1G-sXS" secondAttribute="bottom" constant="40" id="acF-MI-m1s"/>
+                <constraint firstItem="s1z-1G-sXS" firstAttribute="top" secondItem="sjJ-5T-P1q" secondAttribute="top" constant="200" id="mbj-CS-TbP"/>
+            </constraints>
+            <point key="canvasLocation" x="56" y="21"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
