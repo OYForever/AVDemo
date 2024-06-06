@@ -22,7 +22,7 @@ class AudioEncoderViewController: UIViewController {
     }()
     
     private lazy var audioEncoder: OYAudioAACEncode = {
-        let audioEncoder = OYAudioAACEncode(audioBitrate: 96000)
+        let audioEncoder = OYAudioAACEncode(audioBitrate: 112000)
         audioEncoder.errorCallBack = { error in
             print("OYAudioAACEncode error:\(error.code) \(error.localizedDescription)")
         }
@@ -37,7 +37,7 @@ class AudioEncoderViewController: UIViewController {
             else { return }
             
             // 在每个 AAC packet 前先写入 ADTS 头数据。
-            self?.fileHandle?.write(OYAudioAACEncode.create_adts_header(channels: Int(audioFormat.mChannelsPerFrame), sampleRate: Int(audioFormat.mSampleRate), rawDataLength: dataBuffer.dataLength))
+            self?.fileHandle?.write(audioEncoder.createAdtsHeader(channels: Int(audioFormat.mChannelsPerFrame), sampleRate: Int(audioFormat.mSampleRate), rawDataLength: dataBuffer.dataLength))
             // 写入AAC packet 数据
             self?.fileHandle?.write(data)
         }

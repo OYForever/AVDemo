@@ -18,7 +18,6 @@ public final class OYAudioAACEncode {
     fileprivate var audioEncoderInstance: AudioConverterRef?
     fileprivate var aacFormat: CMAudioFormatDescription?
     private let encodeQueue: DispatchQueue = DispatchQueue(label: "com.OYKit.audioAACEncode")
-    private var isError = false
     
     private var leftBuffer: UnsafeMutableRawPointer?
     private var leftLength: Int = 0
@@ -30,118 +29,60 @@ public final class OYAudioAACEncode {
     }
     
     deinit {
-        guard let audioEncoderInstance = audioEncoderInstance else { return }
-        AudioConverterDispose(audioEncoderInstance)
-        guard let leftBuffer = leftBuffer else { return }
-        free(leftBuffer)
-        guard let aacBuffer = aacBuffer else { return }
-        free(aacBuffer)
+        if let audioEncoderInstance = audioEncoderInstance {
+            AudioConverterDispose(audioEncoderInstance)
+            self.audioEncoderInstance = nil
+        }
+        if let leftBuffer = leftBuffer {
+            free(leftBuffer)
+            self.leftBuffer = nil
+        }
+        if let aacBuffer = aacBuffer {
+            free(aacBuffer)
+            self.aacBuffer = nil
+        }
     }
 }
 
 public
 extension OYAudioAACEncode {
     func encodeSampleBuffer(_ sampleBuffer: CMSampleBuffer) {
-        guard CMSampleBufferGetDataBuffer(sampleBuffer) != nil && !isError else { return }
+        guard CMSampleBufferGetDataBuffer(sampleBuffer) != nil else { return }
         encodeQueue.async { [weak self] in
-            self?.encodeSampleBufferInternal(sampleBuffer)
+            do {
+                try self?.encodeSampleBufferInternal(sampleBuffer)
+            } catch {
+                self?.callBackError(error: error as NSError)
+            }
         }
     }
     
-    static func create_adts_header(channels: Int, sampleRate: Int, rawDataLength: Int) -> Data {
-        /**
-         // ADTS 格式参考：http://wiki.multimedia.cx/index.php?title=ADTS
-         // 验证：https://p23.nl/projects/aac-header
-         ADTS 头信息
-         AAAAAAAA AAAABCCD EEFFFFGH HHIJKLMM MMMMMMMM MMMOOOOO OOOOOOPP (QQQQQQQQ QQQQQQQQ)
-
-         Header consists of 7 or 9 bytes (without or with CRC).
-
-         Letter    Length (bits)    Description
-         A    12    Syncword, all bits must be set to 1.
-         B    1    MPEG Version, set to 0 for MPEG-4 and 1 for MPEG-2.
-         C    2    Layer, always set to 0.
-         D    1    Protection absence, set to 1 if there is no CRC and 0 if there is CRC.
-         E    2    Profile, the MPEG-4 Audio Object Type minus 1.
-         F    4    MPEG-4 Sampling Frequency Index (15 is forbidden).
-         G    1    Private bit, guaranteed never to be used by MPEG, set to 0 when encoding, ignore when decoding.
-         H    3    MPEG-4 Channel Configuration (in the case of 0, the channel configuration is sent via an inband PCE (Program Config Element)).
-         I    1    Originality, set to 1 to signal originality of the audio and 0 otherwise.
-         J    1    Home, set to 1 to signal home usage of the audio and 0 otherwise.
-         K    1    Copyright ID bit, the next bit of a centrally registered copyright identifier. This is transmitted by sliding over the bit-string in LSB-first order and putting the current bit value in this field and wrapping to start if reached end (circular buffer).
-         L    1    Copyright ID start, signals that this frame's Copyright ID bit is the first one by setting 1 and 0 otherwise.
-         M    13    Frame length, length of the ADTS frame including headers and CRC check.
-         O    11    Buffer fullness, states the bit-reservoir per frame.
-         max_bit_reservoir = minimum_decoder_input_size - mean_bits_per_RDB; // for CBR
-
-         // bit reservoir state/available bits (≥0 and <max_bit_reservoir); for the i-th frame.
-         bit_reservoir_state[i] = (int)(bit_reservoir_state[i - 1] + mean_framelength - framelength[i]);
-
-         // NCC is the number of channels.
-         adts_buffer_fullness = bit_reservoir_state[i] / (NCC * 32);
-         However, a special value of 0x7FF denotes a variable bitrate, for which buffer fullness isn't applicable.
-
-         P    2    Number of AAC frames (RDBs (Raw Data Blocks)) in ADTS frame minus 1. For maximum compatibility always use one AAC frame per ADTS frame.
-         Q    16    CRC check (as of ISO/IEC 11172-3, subclause 2.4.3.1), if Protection absent is 0.
-         */
-        
-        let adtsLength: Int = 7; // ADTS头没有CRC加密，7字节
-        guard let packet = malloc(adtsLength) else { return Data() }
-
-        
-        // MARK - adts_fixed_header
-        // 第一个字节：(AAAAAAAA)
-        packet.storeBytes(of: 0b11111111, toByteOffset: 0, as: UInt8.self)
-        
-        // 第二个字节：(AAAA_B_CC_D) B(MPEG-2 -> 1) D(没有CRC校验 -> 1)
-        packet.storeBytes(of: 0b1111_1_00_1, toByteOffset: 1, as: UInt8.self)
-        
-        // 第三个字节：(EE_FFFF_G_H)
-        let E: UInt8 = AudioObjectTypes_AAC.AAC_LC.rawValue - 1 // Profile
-        let F: UInt8 = sampleRateIndex(for: sampleRate) // SampleRateIndex
-        let G: UInt8 = 0 // PrivateBit
-        let H: UInt8 = channelIndex(for: channels) // ChannelConfiguration
-        let byte3: UInt8 = (E << 6) + (F << 2) + (G << 1) + (H >> 2)
-        packet.storeBytes(of: byte3, toByteOffset: 2, as: UInt8.self)
-        
-        // 第四个字节：(HHIJKLMM)
-        let IJ: UInt8 = 0b00 // 编码设置为0，解码忽略
-        // MARK - adts_fixed_header
-        let KL: UInt8 = 0b00 // 编码设置为0，解码忽略
-        let M: UInt16 = UInt16(adtsLength + rawDataLength) // 13位
-        let byte4: UInt8 = ((H & 0b11) << 6) + (IJ << 4) + (KL << 2) + UInt8((M >> 11))
-        packet.storeBytes(of: byte4, toByteOffset: 3, as: UInt8.self)
-        
-        // 第五个字节：(MMMMMMMM)
-        let byte5: UInt8 = UInt8((M & 0b11111111111) >> 3)
-        packet.storeBytes(of: byte5, toByteOffset: 4, as: UInt8.self)
-        
-        // 第六个字节：(MMMOOOOO)
-        let O: UInt16 = 0b11111111111 // 11位都设为1。表示是码率可变的码流
-        let byte6: UInt8 = UInt8(((M & 0b111) << 5)) + UInt8((O >> 6))
-        packet.storeBytes(of: byte6, toByteOffset: 5, as: UInt8.self)
-        
-        // 第七个字节：(OOOOOOPP)
-        let P: UInt8 = 0 // ADTS帧中的AAC帧数-1，0相当于ADTS帧使用一个AAC帧
-        let byte7: UInt8 = UInt8((O & 0b111111) << 2) + P
-        packet.storeBytes(of: byte7, toByteOffset: 6, as: UInt8.self)
-        
-        let adtsHeaderData = Data(bytesNoCopy: packet, count: adtsLength, deallocator: Data.Deallocator.free)
-        printDataAsBinary(adtsHeaderData)
-        return adtsHeaderData
+    func createAdtsHeader(channels: Int, sampleRate: Int, rawDataLength: Int) -> Data {
+        Self.create_adts_header(channels: channels, sampleRate: sampleRate, rawDataLength: rawDataLength)
     }
 }
 
 private
 extension OYAudioAACEncode {
     func callBackError(error: NSError) {
-        isError = true
+        if let audioEncoderInstance = audioEncoderInstance {
+            AudioConverterDispose(audioEncoderInstance)
+            self.audioEncoderInstance = nil
+        }
+        if let leftBuffer = leftBuffer {
+            free(leftBuffer)
+            self.leftBuffer = nil
+        }
+        if let aacBuffer = aacBuffer {
+            free(aacBuffer)
+            self.aacBuffer = nil
+        }
         DispatchQueue.main.async {
             self.errorCallBack?(error)
         }
     }
     
-    func encodeSampleBufferInternal(_ sampleBuffer: CMSampleBuffer) {
+    func encodeSampleBufferInternal(_ sampleBuffer: CMSampleBuffer) throws {
         // 1.从输入数据获取音频格式信息
         guard 
             let format = CMSampleBufferGetFormatDescription(sampleBuffer),
@@ -151,11 +92,7 @@ extension OYAudioAACEncode {
         
         // 2.根据音频参数创建编码器实例
         if (audioEncoderInstance == nil) {
-            do {
-                try setupAudioEncoderInstance(inputAudioFormat: &audioFormat)
-            } catch {
-                callBackError(error: error as NSError)
-            }
+            try setupAudioEncoderInstance(inputAudioFormat: &audioFormat)
         }
         
         // 3.获取输入数据中的PCM数据
@@ -189,11 +126,7 @@ extension OYAudioAACEncode {
             
             // 分 encodeCount 次给编码器送数据。
             for _ in 0..<encodeCount {
-                do {
-                    try encodeBuffer(p, timing: &timingInfo) // 调用编码方法
-                } catch {
-                    callBackError(error: error as NSError)
-                }
+                try encodeBuffer(p, timing: &timingInfo) // 调用编码方法
                 p += bufferLength
             }
             
@@ -234,7 +167,7 @@ extension OYAudioAACEncode {
         var outputBitrate = UInt32(self.audioBitrate)
         status = AudioConverterSetProperty(audioEncoderInstance, kAudioConverterEncodeBitRate, UInt32(MemoryLayout<UInt32>.size), &outputBitrate)
         guard status == noErr else {
-            throw NSError(domain: NSStringFromClass(Self.self), code: Int(status))
+            throw NSError(domain: NSStringFromClass(Self.self), code: Int(status), userInfo: [NSLocalizedDescriptionKey: "设置音频编码码率错误"])
         }
         // 4.创建编码格式信息 aacFormat
         status = CMAudioFormatDescriptionCreate(allocator: kCFAllocatorDefault, asbd: &outputFormat, layoutSize: 0, layout: nil, magicCookieSize: 0, magicCookie: nil, extensions: nil, formatDescriptionOut: &aacFormat)
@@ -387,6 +320,89 @@ extension OYAudioAACEncode {
         case 8: return 7
         default: return 0
         }
+    }
+    
+    static func create_adts_header(channels: Int, sampleRate: Int, rawDataLength: Int) -> Data {
+        /**
+         // ADTS 格式参考：http://wiki.multimedia.cx/index.php?title=ADTS
+         // 验证：https://p23.nl/projects/aac-header
+         ADTS 头信息
+         AAAAAAAA AAAABCCD EEFFFFGH HHIJKLMM MMMMMMMM MMMOOOOO OOOOOOPP (QQQQQQQQ QQQQQQQQ)
+
+         Header consists of 7 or 9 bytes (without or with CRC).
+
+         Letter    Length (bits)    Description
+         A    12    Syncword, all bits must be set to 1.
+         B    1    MPEG Version, set to 0 for MPEG-4 and 1 for MPEG-2.
+         C    2    Layer, always set to 0.
+         D    1    Protection absence, set to 1 if there is no CRC and 0 if there is CRC.
+         E    2    Profile, the MPEG-4 Audio Object Type minus 1.
+         F    4    MPEG-4 Sampling Frequency Index (15 is forbidden).
+         G    1    Private bit, guaranteed never to be used by MPEG, set to 0 when encoding, ignore when decoding.
+         H    3    MPEG-4 Channel Configuration (in the case of 0, the channel configuration is sent via an inband PCE (Program Config Element)).
+         I    1    Originality, set to 1 to signal originality of the audio and 0 otherwise.
+         J    1    Home, set to 1 to signal home usage of the audio and 0 otherwise.
+         K    1    Copyright ID bit, the next bit of a centrally registered copyright identifier. This is transmitted by sliding over the bit-string in LSB-first order and putting the current bit value in this field and wrapping to start if reached end (circular buffer).
+         L    1    Copyright ID start, signals that this frame's Copyright ID bit is the first one by setting 1 and 0 otherwise.
+         M    13    Frame length, length of the ADTS frame including headers and CRC check.
+         O    11    Buffer fullness, states the bit-reservoir per frame.
+         max_bit_reservoir = minimum_decoder_input_size - mean_bits_per_RDB; // for CBR
+
+         // bit reservoir state/available bits (≥0 and <max_bit_reservoir); for the i-th frame.
+         bit_reservoir_state[i] = (int)(bit_reservoir_state[i - 1] + mean_framelength - framelength[i]);
+
+         // NCC is the number of channels.
+         adts_buffer_fullness = bit_reservoir_state[i] / (NCC * 32);
+         However, a special value of 0x7FF denotes a variable bitrate, for which buffer fullness isn't applicable.
+
+         P    2    Number of AAC frames (RDBs (Raw Data Blocks)) in ADTS frame minus 1. For maximum compatibility always use one AAC frame per ADTS frame.
+         Q    16    CRC check (as of ISO/IEC 11172-3, subclause 2.4.3.1), if Protection absent is 0.
+         */
+        
+        let adtsLength: Int = 7; // ADTS头没有CRC加密，7字节
+        guard let packet = malloc(adtsLength) else { return Data() }
+
+        
+        // MARK - adts_fixed_header
+        // 第一个字节：(AAAAAAAA)
+        packet.storeBytes(of: 0b11111111, toByteOffset: 0, as: UInt8.self)
+        
+        // 第二个字节：(AAAA_B_CC_D) B(MPEG-2 -> 1) D(没有CRC校验 -> 1)
+        packet.storeBytes(of: 0b1111_1_00_1, toByteOffset: 1, as: UInt8.self)
+        
+        // 第三个字节：(EE_FFFF_G_H)
+        let E: UInt8 = AudioObjectTypes_AAC.AAC_LC.rawValue - 1 // Profile
+        let F: UInt8 = sampleRateIndex(for: sampleRate) // SampleRateIndex
+        let G: UInt8 = 0 // PrivateBit
+        let H: UInt8 = channelIndex(for: channels) // ChannelConfiguration
+        let byte3: UInt8 = (E << 6) + (F << 2) + (G << 1) + (H >> 2)
+        packet.storeBytes(of: byte3, toByteOffset: 2, as: UInt8.self)
+        
+        // 第四个字节：(HHIJKLMM)
+        let IJ: UInt8 = 0b00 // 编码设置为0，解码忽略
+        // MARK - adts_fixed_header
+        let KL: UInt8 = 0b00 // 编码设置为0，解码忽略
+        let M: UInt16 = UInt16(adtsLength + rawDataLength) // 13位
+        let byte4: UInt8 = ((H & 0b11) << 6) + (IJ << 4) + (KL << 2) + UInt8((M >> 11))
+        packet.storeBytes(of: byte4, toByteOffset: 3, as: UInt8.self)
+        
+        // 第五个字节：(MMMMMMMM)
+        let byte5: UInt8 = UInt8((M & 0b11111111111) >> 3)
+        packet.storeBytes(of: byte5, toByteOffset: 4, as: UInt8.self)
+        
+        // 第六个字节：(MMMOOOOO)
+        let O: UInt16 = 0b11111111111 // 11位都设为1。表示是码率可变的码流
+        let byte6: UInt8 = UInt8(((M & 0b111) << 5)) + UInt8((O >> 6))
+        packet.storeBytes(of: byte6, toByteOffset: 5, as: UInt8.self)
+        
+        // 第七个字节：(OOOOOOPP)
+        let P: UInt8 = 0 // ADTS帧中的AAC帧数-1，0相当于ADTS帧使用一个AAC帧
+        let byte7: UInt8 = UInt8((O & 0b111111) << 2) + P
+        packet.storeBytes(of: byte7, toByteOffset: 6, as: UInt8.self)
+        
+        let adtsHeaderData = Data(bytesNoCopy: packet, count: adtsLength, deallocator: Data.Deallocator.free)
+        printDataAsBinary(adtsHeaderData)
+        return adtsHeaderData
     }
 }
 
